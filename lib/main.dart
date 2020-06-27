@@ -1,3 +1,4 @@
+import 'package:expenses/widgets/chart.dart';
 import 'package:expenses/widgets/new_transaction.dart';
 import 'package:expenses/widgets/transaction_list.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +17,12 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.red,
         accentColor: Colors.blue,
         fontFamily: 'Quicksand',
+        textTheme: ThemeData.light().textTheme.copyWith(
+          headline6:TextStyle(fontFamily: 'OpenSans',fontSize: 18,fontWeight: FontWeight.bold)
+        ),
         appBarTheme: AppBarTheme(
-          textTheme: ThemeData.light().textTheme.copyWith(
-                title: TextStyle(fontFamily: 'OpenSans', fontSize: 20),
+          textTheme: ThemeData.light().textTheme.copyWith( headline6:
+                TextStyle(fontFamily: 'OpenSans', fontSize: 20),
               ),
         ),
       ),
@@ -36,20 +40,24 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final List<Transaction> _userTransaction = [
-    Transaction(
-      id: 't1',
-      title: 'New watch',
-      amount: 2000,
-      date: DateTime.now(),
-    ),
-    Transaction(
-      id: 't2',
-      title: 'New bike',
-      amount: 70000,
-      date: DateTime.now(),
-    )
+    // Transaction(
+    //   id: 't1',
+    //   title: 'New watch',
+    //   amount: 2000,
+    //   date: DateTime.now(),
+    // ),
+    // Transaction(
+    //   id: 't2',
+    //   title: 'New bike',
+    //   amount: 70000,
+    //   date: DateTime.now(),
+    // )
   ];
 
+List<Transaction>get _recentTranaction{
+return _userTransaction.wher(test);
+
+}
   void _addNewTransaction(String txTitle, double txAmount) {
     final newTx = Transaction(
       title: txTitle,
@@ -87,22 +95,7 @@ class _HomeState extends State<Home> {
           //mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Center(
-              child: Container(
-                padding: EdgeInsets.all(10),
-                width: double.infinity,
-                child: Card(
-                  color: Colors.red,
-                  child: Center(
-                    child: Text(
-                      'Chart',
-                      style: TextStyle(fontSize: 50, color: Colors.white),
-                    ),
-                  ),
-                  elevation: 5,
-                ),
-              ),
-            ),
+           Chart(recentTransaction),
             TransactionList(_userTransaction)
           ],
         ),
