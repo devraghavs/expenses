@@ -18,11 +18,13 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.blue,
         fontFamily: 'Quicksand',
         textTheme: ThemeData.light().textTheme.copyWith(
-          headline6:TextStyle(fontFamily: 'OpenSans',fontSize: 18,fontWeight: FontWeight.bold)
-        ),
+            headline6: TextStyle(
+                fontFamily: 'OpenSans',
+                fontSize: 18,
+                fontWeight: FontWeight.bold)),
         appBarTheme: AppBarTheme(
-          textTheme: ThemeData.light().textTheme.copyWith( headline6:
-                TextStyle(fontFamily: 'OpenSans', fontSize: 20),
+          textTheme: ThemeData.light().textTheme.copyWith(
+                headline6: TextStyle(fontFamily: 'OpenSans', fontSize: 20),
               ),
         ),
       ),
@@ -54,10 +56,16 @@ class _HomeState extends State<Home> {
     // )
   ];
 
-List<Transaction>get _recentTranaction{
-return _userTransaction.wher(test);
+  List<Transaction> get _recentTransaction {
+    return _userTransaction.where((tx) {
+      return tx.date.isAfter(
+        DateTime.now().subtract(
+          Duration(days: 7),
+        ),
+      );
+    }).toList();
+  }
 
-}
   void _addNewTransaction(String txTitle, double txAmount) {
     final newTx = Transaction(
       title: txTitle,
@@ -95,7 +103,7 @@ return _userTransaction.wher(test);
           //mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-           Chart(recentTransaction),
+            Chart(_recentTransaction),
             TransactionList(_userTransaction)
           ],
         ),
