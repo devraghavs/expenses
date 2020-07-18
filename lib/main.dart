@@ -66,11 +66,11 @@ class _HomeState extends State<Home> {
     }).toList();
   }
 
-  void _addNewTransaction(String txTitle, double txAmount) {
+  void _addNewTransaction(String txTitle, double txAmount,DateTime txDate) {
     final newTx = Transaction(
       title: txTitle,
       amount: txAmount,
-      date: DateTime.now(),
+      date: txDate,
       id: DateTime.now().toString(),
     );
 
@@ -85,6 +85,13 @@ class _HomeState extends State<Home> {
         builder: (_) {
           return NewTransaction(_addNewTransaction);
         });
+  }
+
+  void _deleteTransaction(String id){
+    setState(() {
+      _userTransaction.removeWhere((tx) => tx.id==id);
+    });
+
   }
 
   @override
@@ -104,7 +111,7 @@ class _HomeState extends State<Home> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Chart(_recentTransaction),
-            TransactionList(_userTransaction)
+            TransactionList(_userTransaction,_deleteTransaction)
           ],
         ),
       ),
