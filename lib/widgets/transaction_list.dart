@@ -10,19 +10,32 @@ class TransactionList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 550,
+      // height: MediaQuery.of(context).size.height,
       child: transaction.isEmpty
-          ? Column(
+          ?
+          LayoutBuilder(builder: (ctx,constraints){
+            return Column(
               children: <Widget>[
-                Text("No transaction!!"),
+                 SizedBox(height: constraints.maxHeight* 0.10,),
+                Text("No transaction !",
+                style: Theme.of(context).textTheme.headline6,),
+                SizedBox(height: constraints.maxHeight* 0.15),
                 Container(
-                    height: 300,
-                    child: Image.asset(
-                      'assets/images/emptycart.png',
-                      fit: BoxFit.cover,
-                    ))
+                  child: CircleAvatar(
+                    radius:constraints.maxHeight* 0.3,
+                    child:Icon(Icons.money_off,size:constraints.maxHeight* 0.5,)
+                  ),
+                    // height: 300,
+                    // child: Image.asset(
+                    //   'assets/images/emptycart.png',
+                    //   fit: BoxFit.cover,
+                    // ))
+                )
               ],
-            )
+            );
+
+          }
+          ) 
           : ListView.builder(
               itemBuilder: (ctx, index) {
                 return 
