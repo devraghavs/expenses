@@ -1,12 +1,9 @@
 import 'dart:io';
-
 import 'package:expenses/widgets/chart.dart';
 import 'package:expenses/widgets/new_transaction.dart';
 import 'package:expenses/widgets/transaction_list.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
 import 'models/transaction.dart';
 
 void main() {
@@ -53,7 +50,7 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with WidgetsBindingObserver {
   final List<Transaction> _userTransaction = [
     // Transaction(
     //   id: 't1',
@@ -69,6 +66,22 @@ class _HomeState extends State<Home> {
     // )
   ];
   bool _showChart = false;
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();// fetch store.
+  }
+
+  @override
+  void didChangeAppLifecycleState(
+      AppLifecycleState
+          state) {} // whenevr app reaches in the new state in the  cycle
+  dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+
+    super.dispose();// delete the request.
+  }
+
   List<Transaction> get _recentTransaction {
     return _userTransaction.where((tx) {
       return tx.date.isAfter(
@@ -106,17 +119,58 @@ class _HomeState extends State<Home> {
     });
   }
 
+  List<Widget> _buildLandscape(
+      MediaQueryData mediaQuery, AppBar appBar, Widget txList) {
+    return [
+      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Text(
+          'Show Chart',
+          style: Theme.of(context).textTheme.headline6,
+        ),
+        Switch.adaptive(
+            value: _showChart,
+            onChanged: (val) {
+              setState(() {
+                _showChart = val;
+              });
+            })
+      ]),
+      _showChart
+          ? Container(
+              height: (mediaQuery.size.height -
+                      appBar.preferredSize.height -
+                      mediaQuery.padding.top) *
+                  0.7,
+              child: Chart(_recentTransaction),
+            )
+          : txList
+    ];
+  }
+
+  List<Widget> _buildPortrait(
+      MediaQueryData mediaQuery, AppBar appBar, Widget txList) {
+    return [
+      Container(
+          height: (mediaQuery.size.height -
+                  appBar.preferredSize.height -
+                  mediaQuery.padding.top) *
+              0.3,
+          child: Chart(_recentTransaction)),
+      txList
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
+    print('build() MyHomePageState');
     final mediaQuery = MediaQuery.of(context);
     final isLandscaape = mediaQuery.orientation == Orientation.landscape;
     final PreferredSizeWidget appBar = Platform.isIOS
         ? CupertinoNavigationBar(
             middle: Text('Personal Expense'),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min, children:<Widget>[
-               GestureDetector(
-                  child:Icon(CupertinoIcons.add),
+            trailing: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+              GestureDetector(
+                  child: Icon(CupertinoIcons.add),
                   onTap: () => _startAddNewTransaction(context))
             ]),
           )
@@ -134,46 +188,20 @@ class _HomeState extends State<Home> {
                 mediaQuery.padding.top) *
             0.7,
         child: TransactionList(_userTransaction, _deleteTransaction));
-    final pageBody = SafeArea(child: SingleChildScrollView(
+    final pageBody = SafeArea(
+        child: SingleChildScrollView(
       child: Column(
         //mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (isLandscaape)
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text('Show Chart',style: Theme.of(context).textTheme.headline6,),
-              Switch.adaptive(
-                  value: _showChart,
-                  onChanged: (val) {
-                    setState(() {
-                      _showChart = val;
-                    });
-                  })
-            ]),
-          if (!isLandscaape)
-            Container(
-                height: (mediaQuery.size.height -
-                        appBar.preferredSize.height -
-                        mediaQuery.padding.top) *
-                    0.3,
-                child: Chart(_recentTransaction)),
-          if (!isLandscaape) txList,
-          if (isLandscaape)
-            _showChart
-                ? Container(
-                    height: (mediaQuery.size.height -
-                            appBar.preferredSize.height -
-                            mediaQuery.padding.top) *
-                        0.7,
-                    child: Chart(_recentTransaction))
-                : txList
+          if (isLandscaape) ..._buildLandscape(mediaQuery, appBar, txList),
+          if (!isLandscaape) ..._buildPortrait(mediaQuery, appBar, txList),
         ],
       ),
     ));
     return Platform.isIOS
         ? CupertinoPageScaffold(
             child: pageBody,
-
           )
         : Scaffold(
             appBar: appBar,

@@ -1,6 +1,7 @@
 import 'package:expenses/models/transaction.dart';
+import 'package:expenses/widgets/transaction_item.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+
 
 class TransactionList extends StatelessWidget {
   final List<Transaction> transaction;
@@ -9,7 +10,7 @@ class TransactionList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
+    print('build() TransactionList');
     return Container(
       // height: MediaQuery.of(context).size.height,
       child: transaction.isEmpty
@@ -42,57 +43,11 @@ class TransactionList extends StatelessWidget {
             })
           : ListView.builder(
               itemBuilder: (ctx, index) {
-                return Container(
-                  child: Dismissible(
-                    child: Card(
-                      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-                      elevation: 5,
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          radius: 30,
-                          child: Padding(
-                            padding: EdgeInsets.all(6),
-                            child: FittedBox(
-                              child: Text('₹${transaction[index].amount}'),
-                            ),
-                          ),
-                        ),
-                        title: Text(transaction[index].title,
-                            style: Theme.of(context).textTheme.headline6),
-                        subtitle: Text(
-                          DateFormat.yMMMd().format(transaction[index].date),
-                        ),
-                        trailing: MediaQuery.of(context).size.width > 460
-                            ? FlatButton.icon(
-                                icon: Icon(Icons.delete),
-                                label: Text('Delete'),
-                                textColor: Theme.of(context).errorColor,
-                                onPressed: () =>
-                                    deleyetx(transaction[index].id),
-                              )
-                            : IconButton(
-                                icon: Icon(Icons.delete),
-                                color: Theme.of(context).errorColor,
-                                onPressed: () =>
-                                    deleyetx(transaction[index].id),
-                              ),
-                      ),
-                    ),
-                    key: Key('${transaction[index]}'),
-                    onDismissed: (direction) {
-                      deleyetx(transaction[index].id);
-                      Scaffold.of(context).showSnackBar(SnackBar(
-                          content:
-                              Text('${transaction[index]}' + 'is removed')));
-                    },
-                    background: Container(
-                      color: Colors.red,
-                    ),
-                  ),
-                );
+                return TransactionItem(transaction: transaction[index], deleyetx: deleyetx);
               },
               itemCount: transaction.length,
             ),
     );
   }
 }
+
