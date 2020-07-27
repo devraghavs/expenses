@@ -162,7 +162,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    print('build() MyHomePageState');
+    // print('build() MyHomePageState');
     final mediaQuery = MediaQuery.of(context);
     final isLandscaape = mediaQuery.orientation == Orientation.landscape;
     final PreferredSizeWidget appBar = Platform.isIOS
